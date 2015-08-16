@@ -1,0 +1,50 @@
+{
+  "kind": "ReplicationController",
+  "apiVersion": "v1beta3",
+  "metadata": {
+    "name": "pgview-canary"
+  },
+  "spec": {
+    "replicas": 1,
+    "selector": {
+      "app": "pgview",
+      "track": "canary"
+    },
+    "template": {
+      "metadata": {
+        "labels": {
+          "app": "pgview",
+          "track": "canary"
+        }
+      },
+      "spec": {
+        "containers": [
+          {
+            "name": "pgview",
+            "image": "quay.io/kelseyhightower/pgview:2.0.0",
+            "ports": [
+              {
+                "containerPort": 80,
+                "protocol": "TCP"
+              }
+            ],
+            "imagePullPolicy": "IfNotPresent"
+          },
+          {
+            "name": "memcached",
+            "image": "memcached",
+            "ports": [
+              {
+                "containerPort": 11211,
+                "protocol": "TCP"
+              }
+            ],
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "dnsPolicy": "ClusterFirst"
+      }
+    }
+  }
+}

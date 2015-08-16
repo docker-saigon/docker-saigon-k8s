@@ -1,0 +1,52 @@
+{
+  "kind": "ReplicationController",
+  "apiVersion": "v1beta3",
+  "metadata": {
+    "name": "pgview-stable-v2"
+  },
+  "spec": {
+    "replicas": 3,
+    "selector": {
+      "app": "pgview",
+      "name": "pgview-stable-v2",
+      "track": "stable"
+    },
+    "template": {
+      "metadata": {
+        "labels": {
+          "app": "pgview",
+          "name": "pgview-stable-v2",
+          "track": "stable"
+        }
+      },
+      "spec": {
+        "containers": [
+          {
+            "name": "pgview",
+            "image": "quay.io/kelseyhightower/pgview:2.0.0",
+            "ports": [
+              {
+                "containerPort": 80,
+                "protocol": "TCP"
+              }
+            ],
+            "imagePullPolicy": "IfNotPresent"
+          },
+          {
+            "name": "memcached",
+            "image": "memcached",
+            "ports": [
+              {
+                "containerPort": 11211,
+                "protocol": "TCP"
+              }
+            ],
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "dnsPolicy": "ClusterFirst"
+      }
+    }
+  }
+}
