@@ -4,4 +4,5 @@ Linux containers provide the ability to reliably deploy thousands of application
 
 http://yapcasia.org/2015/talk/show/e19fe827-13c1-11e5-aca1-525412004261
 
+The slides for this talk are hosted [online](http://go-talks.appspot.com/github.com/kelseyhightower/yapc-asia-2015/slides/talk.slide#1)
 
