@@ -4,6 +4,8 @@
 
 ```
 kubectl create -f ns/kube-demo-namespace.yaml 
+```
+```
 kubectl config set-context demo --namespace=demo
 ```
 
