@@ -108,6 +108,24 @@ cat /etc/nginx/conf.d/inspector-canary.conf
 
 http://canary.inspector.kuar.io
 
+### Self-healing
+
+#### Terminal 1
+
+```
+kubectl get pods --watch-only
+```
+
+#### Terminal 2
+
+```
+kubectl get pods -l track=canary
+```
+
+```
+kubectl delete pods <canary-pod>
+```
+
 ### Rolling update
 
 #### Terminal 1
