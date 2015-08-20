@@ -42,8 +42,17 @@ kubectl get pods --watch
 
 #### Expose the inspector service
 
+
+```
+cat svc/inspector-svc.yaml
+```
+
 ```
 kubectl create -f svc/inspector-svc.yaml
+```
+
+```
+kubectl describe svc inspector
 ```
 
 ### Expose services with nginx
