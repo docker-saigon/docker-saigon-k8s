@@ -16,11 +16,15 @@ kubectl get cs
 ```
 
 ```
+kubectl get nodes
+```
+
+```
 kubectl get pods
 ```
 
 ```
-kubectl get nodes
+kubectl get replicationcontrollers
 ```
 
 ```
