@@ -162,6 +162,10 @@ kubectl label pods <canary-pod> track-
 ```
 
 ```
+kubectl describe pods <canary-pod>
+```
+
+```
 kubectl get pods
 ```
 
