@@ -143,6 +143,10 @@ kubectl get pods -l track=canary
 kubectl delete pods <canary-pod>
 ```
 
+```
+kubectl get pods
+```
+
 ### Troubleshooting
 
 ```
