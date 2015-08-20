@@ -1,5 +1,12 @@
 # YAPC 2015 Kubernetes Demo
 
+### Create the demo namespace
+
+```
+kubectl create -f ns/kube-demo-namespace.yaml 
+kubectl config set-context demo --namespace=demo
+```
+
 ### Explore the Kubernetes API
 
 ```
