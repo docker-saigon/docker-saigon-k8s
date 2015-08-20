@@ -150,6 +150,10 @@ kubectl get pods
 ### Troubleshooting
 
 ```
+kubectl describe svc inspector-canary
+```
+
+```
 kubectl get pods -l track=canary
 ```
 
