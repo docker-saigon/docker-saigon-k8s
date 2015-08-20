@@ -55,9 +55,7 @@ kubectl create -f svc/inspector-svc.yaml
 kubectl describe svc inspector
 ```
 
-```
 http://104.155.220.199:36000
-```
 
 ### Expose services with nginx
 
