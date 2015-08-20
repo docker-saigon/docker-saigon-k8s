@@ -57,7 +57,7 @@ kubectl get pods --watch-only
 kubectl scale rc inspector --replicas=10
 ```
 
-#### Expose the inspector service
+### Expose the inspector service
 
 ```
 cat svc/inspector-svc.yaml
