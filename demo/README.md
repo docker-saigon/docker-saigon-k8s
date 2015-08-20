@@ -83,7 +83,7 @@ http://inspector.kuar.io
 ```
 kubectl run inspector-canary \
   --labels="app=inspector,track=canary" \
-  --replicas=1 \
+  --replicas=2 \
   --image=b.gcr.io/kuar/inspector:2.0.0
 ```
 
@@ -124,6 +124,28 @@ kubectl get pods -l track=canary
 
 ```
 kubectl delete pods <canary-pod>
+```
+
+### Troubleshooting
+
+```
+kubectl get pods -l track=canary
+```
+
+```
+kubectl label pods <canary-pod> track-
+```
+
+```
+kubectl get pods
+```
+
+```
+kubectl describe svc inspector-canary
+```
+
+```
+kubectl logs -f <canary-pod>
 ```
 
 ### Rolling update
