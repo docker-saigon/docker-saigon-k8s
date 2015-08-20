@@ -31,7 +31,7 @@ kubectl get replicationcontrollers
 kubectl get services
 ```
 
-### Create a pod
+### Create a Replication Controller
 
 ```
 kubectl run inspector \
@@ -43,7 +43,7 @@ kubectl run inspector \
 kubectl describe pods inspector
 ```
 
-#### Scale out with kubectl
+### Scale out with kubectl
 
 #### Terminal 1
 
