@@ -205,3 +205,9 @@ kubectl get pods --watch-only
 ```
 kubectl rolling-update inspector --update-period=3s --image=b.gcr.io/kuar/inspector:2.0.0
 ```
+
+#### Terminal 4
+
+```
+kubectl describe pods <inspector-pod>
+```
