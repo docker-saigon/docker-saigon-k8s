@@ -197,7 +197,7 @@ while true; do curl -s http://inspector.kuar.io | \
 #### Terminal 2
 
 ```
-kubectl get pods --watch
+kubectl get pods --watch-only
 ```
 
 #### Terminal 3
