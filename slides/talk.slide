@@ -35,8 +35,6 @@ Machine inventory:
 
 .code ansible/hosts
 
-* Configuration management demo
-
 * Configuration Management
 
 Not a good fit for application management
@@ -178,47 +176,5 @@ Service discovery for pods.
 * Service Manifest
 
 .code manifests/service.json
-
-* Real world example
-
-* pgview
-
-Request
-
-  curl http://api.pgview.com -d @rpc/sqlfeatures.json
-
-Response
-
-  {
-      "id": 0,
-      "result": {
-          "Features": [
-              "Embedded Ada",
-              "Embedded C",
-              "Embedded COBOL",
-              "Embedded Fortran",
-              "Embedded MUMPS",
-              "Embedded Pascal",
-              ...
-          ],
-          "Count": 672
-      },
-      "error": null
-  }
-
-* pgview
-
-Postgres database info as a service.
-
-Application requirements:
-
-- Horizontally scalable 
-- Dedicated Memcache instance per application (local caching)
-- Postgres database
-
-Operational Requirements:
-
-- Automated service discovery
-- Zero downtime application upgrades
 
 * Kubernetes in action

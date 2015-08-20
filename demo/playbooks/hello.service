@@ -1,5 +1,0 @@
-[Unit]
-Description=Hello Service
-
-[Service]
-ExecStart=/opt/bin/hello -p 9440

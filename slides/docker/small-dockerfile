@@ -1,6 +1,6 @@
 FROM       scratch
 
 MAINTAINER Kelsey Hightower <kelsey.hightower@gmail.com>
-ADD        pgview pgview 
+ADD        inspector
 
-ENTRYPOINT ["/pgview"]
+ENTRYPOINT ["/inspector"]

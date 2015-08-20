@@ -1,111 +1,101 @@
-# Demo
+# YAPC 2015 Kubernetes Demo
 
-## Provisioning
-
-```
-fleetctl list-machines
-```
-
-### Start Flannel
+### Explore the Kubernetes API
 
 ```
-fleetctl start units/flannel.service
-```
-
-### Start Docker
-
-``` 
-fleetctl start units/docker.service
-```
-
-### Start Kubernetes Server Components
-
-``` 
-fleetctl start units/kube-etcd.service 
-fleetctl start units/kube-apiserver.service 
-fleetctl start units/kube-controller-manager.service 
-fleetctl start units/kube-scheduler.service 
-```
-
-### Start Kubernetes Worker Components 
-
-```
-fleetctl start units/kube-kubelet.service 
-fleetctl start units/kube-proxy.service
-```
-
-### Register Worker Nodes
-
-``` 
-fleetctl start units/kube-register.service 
-```
-
-## Deploy pgview stack
-
-### Create the postgres pod
-
-```
-kubectl create -f pods/postgres.json
-```
-
-### Create the postgres service
-
-```
-kubectl create -f services/postgres.json
+kubectl get cs
 ```
 
 ```
-psql -h POSTGRES_PORTAL_IP -U postgres
-```
-
-### Create the pgview replication controller
-
-```
-kubectl create -f replicationcontrollers/pgview-stable-v1.json
-```
-
-### Create the pgview service
-
-```
-kubectl create -f services/pgview.json
+kubectl get pods
 ```
 
 ```
-curl http://PGVIEW_PORTAL_IP -d @rpc/version.json
+kubectl get nodes
 ```
 
 ```
-curl http://PGVIEW_PORTAL_IP -d @rpc/sqlfeatures.json
+kubectl get services
 ```
 
-Run it again, request should be served from memcache
+### Create a pod
 
 ```
-curl http://PGVIEW_PORTAL_IP -d @rpc/sqlfeatures.json
+kubectl run inspector \
+  --labels="app=inspector,track=stable" \
+  --image=b.gcr.io/kuar/inspector:1.0.0
+```
+
+```
+kubectl describe pods inspector
+```
+
+#### Scale out with kubectl
+
+```
+kubectl scale rc inspector --replicas=10
+```
+
+```
+kubectl get pods --watch
+```
+
+#### Expose the inspector service
+
+```
+kubectl create -f svc/inspector-svc.yaml
+```
+
+### Expose services with nginx
+
+```
+gcloud compute ssh nginx
+cat /etc/nginx/conf.d/inspector.conf
+```
+
+```
+sudo docker run -d --net=host \
+  -v /etc/nginx/conf.d:/etc/nginx/conf.d \
+  nginx
+
+```
+```
+docker ps
+```
+
+### The canary deployment pattern
+
+```
+kubectl run inspector-canary \
+  --labels="app=inspector,track=canary" \
+  --replicas=1 \
+  --image=b.gcr.io/kuar/inspector:2.0.0
+```
+
+```
+while true; do curl -s http://inspector.kuar.io | \
+  grep -o -e 'Version: Inspector [0-9].[0-9].[0-9]'; sleep .5; done
+```
+
+#### expose the canary service
+
+```
+kubectl create -f svc/inspector-canary-svc.yaml
+```
+
+```
+gcloud compute ssh nginx
+cat /etc/nginx/conf.d/inspector-canary.conf
 ```
 
 #### Terminal 2
 
 ```
-while true; do curl http://PGVIEW_PORTAL_IP -d @rpc/version.json; sleep 1; done
+kubectl get pods --watch
 ```
 
-## Scaling pgview 
+#### Terminal 3
 
 ```
-kubectl resize --replicas=3 replicationcontrollers pgview-stable-v1
-```
-
-## Upgrade pgview using the canary pattern
-
-### Deploy the canary pod
-
-```
-kubectl create -f replicationcontrollers/pgview-canary.json
-```
-
-### Rolling upgrade
-
-```
-kubectl rolling-update --update-period=4s pgview-stable-v1 -f replicationcontrollers/pgview-stable-v2.json
+kubectl rolling-update inspector --update-period=3s --image=b.gcr.io/kuar/inspector:2.0.0
 ```
