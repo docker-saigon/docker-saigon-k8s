@@ -45,12 +45,16 @@ kubectl describe pods inspector
 
 #### Scale out with kubectl
 
-```
-kubectl scale rc inspector --replicas=10
-```
+#### Terminal 1
 
 ```
-kubectl get pods --watch
+kubectl get pods --watch-only
+```
+
+#### Terminal 2
+
+```
+kubectl scale rc inspector --replicas=10
 ```
 
 #### Expose the inspector service
