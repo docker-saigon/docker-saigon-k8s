@@ -42,7 +42,6 @@ kubectl get pods --watch
 
 #### Expose the inspector service
 
-
 ```
 cat svc/inspector-svc.yaml
 ```
@@ -61,6 +60,9 @@ http://104.155.220.199:36000
 
 ```
 gcloud compute ssh nginx
+```
+
+```
 cat /etc/nginx/conf.d/inspector.conf
 ```
 
@@ -68,11 +70,13 @@ cat /etc/nginx/conf.d/inspector.conf
 sudo docker run -d --net=host \
   -v /etc/nginx/conf.d:/etc/nginx/conf.d \
   nginx
-
 ```
+
 ```
 docker ps
 ```
+
+http://inspector.kuar.io
 
 ### The canary deployment pattern
 
@@ -96,7 +100,21 @@ kubectl create -f svc/inspector-canary-svc.yaml
 
 ```
 gcloud compute ssh nginx
+```
+
+```
 cat /etc/nginx/conf.d/inspector-canary.conf
+```
+
+http://canary.inspector.kuar.io
+
+### Rolling update
+
+#### Terminal 1
+
+```
+while true; do curl -s http://inspector.kuar.io | \
+  grep -o -e 'Version: Inspector [0-9].[0-9].[0-9]'; sleep .5; done
 ```
 
 #### Terminal 2
