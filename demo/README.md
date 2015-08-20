@@ -173,6 +173,14 @@ kubectl describe svc inspector-canary
 kubectl logs -f <canary-pod>
 ```
 
+```
+kubectl delete pods <canary-pod>
+```
+
+```
+kubectl get pods
+```
+
 ### Rolling update
 
 #### Terminal 1
