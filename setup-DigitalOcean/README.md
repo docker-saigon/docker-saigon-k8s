@@ -26,8 +26,8 @@ $ export DO_TOKEN=<token_from_website>
 
 Get Id of SSH Keys added to your account using [jq](https://stedolan.github.io/jq/)
 
-```console
-$ curl -X GET "https://api.digitalocean.com/v2/account/keys" /
+```
+curl -X GET "https://api.digitalocean.com/v2/account/keys" /
  -H 'Content-Type: application/json' 
  -H "Authorization: Bearer $DO_TOKEN"  -s | jq .
 {
@@ -117,9 +117,10 @@ $ export SSH_KEY_ID=721599
 
 ### List all Droplets (API)
 
+```
 curl -X GET "https://api.digitalocean.com/v2/droplets" \
   -H "Authorization: Bearer $DO_TOKEN" | jq .
-
+```
 
 ### Create Master Droplet (Web interface)
 
