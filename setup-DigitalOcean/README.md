@@ -27,7 +27,9 @@ $ export DO_TOKEN=<token_from_website>
 Get Id of SSH Keys added to your account using [jq](https://stedolan.github.io/jq/)
 
 ```console
-$ curl -X GET -H 'Content-Type: application/json' -H "Authorization: Bearer $DO_TOKEN" "https://api.digitalocean.com/v2/account/keys" -s | jq .
+$ curl -X GET "https://api.digitalocean.com/v2/account/keys" /
+> -H 'Content-Type: application/json' /
+> -H "Authorization: Bearer $DO_TOKEN"  -s | jq .
 {
   "ssh_keys": [
     {
