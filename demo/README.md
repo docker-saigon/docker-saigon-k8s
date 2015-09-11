@@ -2,7 +2,7 @@
 
 ### Pre-Requisites 
 
-1. Create the kubernetes cluster following steps described here: [setup-DigitalOcean](setup-DigitalOcean/README.md)
+1. Create the kubernetes cluster following steps described here: [setup-DigitalOcean](../setup-DigitalOcean/README.md)
 
 1. Create an nginx proxy running outside of k8s cluster listening on port 80
 
