@@ -1,9 +1,9 @@
-# kubernetes v1.0.4 on CoreOS/flannel at Digital Ocean
+## k8s v1.0.4 on CoreOS/flannel at Digital Ocean
 Simple bootstrap config for quick start
 
 get latest stable release version number:
 
-```
+```bash
 k8s_latest=`curl https://storage.googleapis.com/kubernetes-release/release/stable.txt`
 
 # all binaries can be curled via:
@@ -57,7 +57,7 @@ For Demo: create a DNS record pointing to `node%i%.domain.com` to public IP of d
 
 ### Run & Expose Kube-ui for demo
 
-```
+```bash
 git clone https://github.com/so0k/yapc-asia-2015.git
 kubectl create -f yapc-asia-2015.git/demo/rc/kube-ui-rc.yaml --namespace=kube-system
 kubectl create -f yapc-asia-2015.git/demo/svc/kube-ui-svc.yaml --namespace=kube-system
