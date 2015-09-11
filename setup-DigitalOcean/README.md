@@ -111,7 +111,7 @@ $ export SSH_KEY_ID=721599
       "ssh_keys":['$SSH_KEY_ID'],
       "backups":false,
       "private_networking":true,
-      "user_data": "'"$(cat cloud-init-node.yaml | sed 's/<master-private-ip>/$MASTER_PRIVATE_ IP/g sed 's/"/\\"/g')"'"
+      "user_data": "'"$(cat cloud-init-node.yaml | sed 's/<master-private-ip>/$MASTER_PRIVATE_IP/g' | sed 's/"/\\"/g')"'"
   }
   ```
 
