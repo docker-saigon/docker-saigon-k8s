@@ -12,6 +12,6 @@ spec:
     track: canary
   ports:
   - name: http
-    nodePort: 36001
+    nodePort: 31001
     port: 80
     protocol: TCP

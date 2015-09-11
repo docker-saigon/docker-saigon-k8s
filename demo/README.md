@@ -1,12 +1,85 @@
-# YAPC 2015 Kubernetes Demo
+# Docker Saigon - Intro to Kubernetes
+
+### Pre-Requisites 
+
+1. Create the kubernetes cluster following steps described here: [setup-DigitalOcean](setup-DigitalOcean/README.md)
+
+1. Create an nginx proxy running outside of k8s cluster listening on port 80
+
+1. Create DNS Records pointing `inspect.domain.com` & `canary.domain.com` to the nginx proxy
+
+1. Add nginx load balancing entries for `inspect.domain.com` & `canary.domain.com` as follows:
+
+   `/etc/nginx/conf.d/inspector.conf`
+   ```
+    upstream inspector {
+      least_conn;
+      server node0.domain.com:31000;
+      server node1.domain.com:31000;
+      server node2.domain.com:31000;
+    }
+
+    server {
+        listen 80;
+        server_name  inspect.domain.com;
+
+        location / {
+            proxy_pass http://inspector;
+        }
+    }
+   ```
+
+   `/etc/nginx/conf.d/canary-inspector.conf`
+   ```
+    upstream canary-inspector {
+      least_conn;
+      server node0.domain.com:31001;
+      server node1.domain.com:31001;
+      server node2.domain.com:31001;
+    }
+
+    server {
+        listen 80;
+        server_name  canary.domain.com;
+
+        location / {
+            proxy_pass http://canary-inspector;
+        }
+    }
+   ```
+
+1. Ensure working directory has demo config files:
+
+   ```
+   ssh core@master.domain.com
+   ```
+
+   ```
+   git clone https://github.com/so0k/yapc-asia-2015.git
+   ```
+
+   ```
+   cd ~core/yapc-asia-2015/demo/
+   ```
 
 ### Create the demo namespace
 
 ```
 kubectl create -f ns/kube-demo-namespace.yaml 
 ```
+
 ```
 kubectl config set-context demo --namespace=demo
+```
+
+### Confirm namespace exists & context is updated
+
+```
+kubectl get namespaces
+```
+
+```
+kubectl config view
 ```
 
 ### Explore the Kubernetes API
@@ -16,19 +89,19 @@ kubectl get cs
 ```
 
 ```
-kubectl get nodes
+kubectl get no
 ```
 
 ```
-kubectl get pods
+kubectl get po
 ```
 
 ```
-kubectl get replicationcontrollers
+kubectl get rc
 ```
 
 ```
-kubectl get services
+kubectl get svc
 ```
 
 ### Create a Replication Controller
@@ -57,10 +130,14 @@ kubectl get pods --watch-only
 kubectl scale rc inspector --replicas=10
 ```
 
-### Expose the inspector service
+### Expose the inspector service (using nodePort instead of publicIPs for demo purpose only)
 
 ```
 cat svc/inspector-svc.yaml
+```
+
+```
+kubectl get po -l app=inspector
 ```
 
 ```
@@ -71,12 +148,12 @@ kubectl create -f svc/inspector-svc.yaml
 kubectl describe svc inspector
 ```
 
-http://104.155.220.199:36000
+node0.domain.com:31000
 
 ### Expose services with nginx
 
 ```
-gcloud compute ssh nginx
+ssh user@domain.com
 ```
 
 ```
@@ -93,7 +170,7 @@ sudo docker run -d --net=host \
 docker ps
 ```
 
-http://inspector.kuar.io
+http://inspect.domain.com/net
 
 ### The canary deployment pattern
 
@@ -105,25 +182,37 @@ kubectl run inspector-canary \
 ```
 
 ```
-while true; do curl -s http://inspector.kuar.io | \
+while true; do curl -s http://inspect.domain.com | \
   grep -o -e 'Version: Inspector [0-9].[0-9].[0-9]'; sleep .5; done
 ```
 
 #### expose the canary service
 
 ```
+cat svc/inspector-canary-svc.yaml
+```
+
+```
 kubectl create -f svc/inspector-canary-svc.yaml
 ```
 
 ```
-gcloud compute ssh nginx
+kubectl describe svc inspector-canary
+```
+
+```
+kubectl get po -l app=inspector,track=canary
+```
+
+```
+ssh user@domain.com
 ```
 
 ```
 cat /etc/nginx/conf.d/inspector-canary.conf
 ```
 
-http://canary.inspector.kuar.io
+http://canary.domain.com/
 
 ### Self-healing
 
@@ -190,7 +279,7 @@ kubectl get pods
 #### Terminal 1
 
 ```
-while true; do curl -s http://inspector.kuar.io | \
+while true; do curl -s http://inspect.domain.com | \
   grep -o -e 'Version: Inspector [0-9].[0-9].[0-9]'; sleep .5; done
 ```
 
@@ -210,4 +299,13 @@ kubectl rolling-update inspector --update-period=3s --image=b.gcr.io/kuar/inspec
 
 ```
 kubectl describe pods <inspector-pod>
+```
+
+### Cleaning up
+
+```
+kubectl delete rc inspector
+kubectl delete svc inspector
+kubectl delete rc inspector-canary
+kubectl delete svc inspector-canary
 ```

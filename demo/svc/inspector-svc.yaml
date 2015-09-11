@@ -10,6 +10,6 @@ spec:
     app: inspector
   ports:
   - name: http
-    nodePort: 36000
+    nodePort: 31000
     port: 80
     protocol: TCP
