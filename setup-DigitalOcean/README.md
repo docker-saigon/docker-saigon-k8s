@@ -1,10 +1,11 @@
 ## k8s v1.0.4 on CoreOS/flannel at Digital Ocean
+
 Simple bootstrap config for quick start
 
 get latest stable release version number:
 
 ```bash
-k8s_latest=`curl https://storage.googleapis.com/kubernetes-release/release/stable.txt`
+k8s_latest=`curl https://storage.googleapis.com/kubernetes-release/release/stable.txt -s`
 
 # all binaries can be curled via:
 http://storage.googleapis.com/kubernetes-release/release/$k8s_latest/bin/linux/amd64/<binary_name>
@@ -15,11 +16,110 @@ Revise the yaml files to ensure `kubernetes-release` is as expected.
 ### Installation
 Quick start to set up Kubernetes on CoreOS/flannel at DigitalOcean.
 
-### Todo
+### Digital Ocean API Key
 
-* Use DO API
+You will need your Digital Ocean API key handy. Head over to https://cloud.digitalocean.com/settings/applications if you do not yet have one. Generate a new *Personal Access Token* for both *read* and *write*. Export the token as an environment variable so we can use it later on:
 
-### Create Master Instance
+```console
+$ export DO_TOKEN=<token_from_website>
+```
+
+Get Id of SSH Keys added to your account using [jq](https://stedolan.github.io/jq/)
+
+```console
+$ curl -X GET -H 'Content-Type: application/json' -H "Authorization: Bearer $DO_TOKEN" "https://api.digitalocean.com/v2/account/keys" -s | jq .
+{
+  "ssh_keys": [
+    {
+      "id": 418602,
+      "fingerprint": "...",
+      "public_key": "ssh-rsa ...",
+      "name": ".."
+    },
+    {
+      "id": 721599,
+      "fingerprint": "...",
+      "public_key": "...",
+      "name": "..."
+    }
+  ],
+  "links": {},
+  "meta": {
+    "total": 2
+  }
+}
+```
+
+```console
+$ export SSH_KEY_ID=721599
+```
+
+### Create Master Droplet (API) - untested
+
+  ```
+  curl -X POST https://api.digitalocean.com/v2/droplets \
+      -H 'Content-Type: application/json' \
+      -H "Authorization: Bearer $DO_TOKEN" \
+      -d '
+  {
+      "name":"master.domain.com",
+      "region":"sgp1",
+      "size":"512mb",
+      "image":"coreos-stable",
+      "ssh_keys":['$SSH_KEY_ID'],
+      "backups":false,
+      "private_networking":true,
+      "user_data": "'"$(cat cloud-init-master.yaml | sed 's/"/\\"/g')"'"
+  }
+  ```
+
+  Get master private IP
+
+  ```console
+  $ curl -X GET "https://api.digitalocean.com/v2/droplets/<master_id>"   -H "Authorization: Bearer $DO_TOKEN" -s | jq '.droplet.networks.v4'
+  [
+    {
+      "ip_address": "10.130.47.24",
+      "netmask": "255.255.0.0",
+      "gateway": "10.130.1.1",
+      "type": "private"
+    },
+    {
+      "ip_address": "188.166.250.205",
+      "netmask": "255.255.240.0",
+      "gateway": "188.166.240.1",
+      "type": "public"
+    }
+  ]
+  $ export MASTER_PRIVATE_IP=10.130.47.24
+  ```
+
+### Create Node Droplet (API) - untested
+
+  ```console
+  curl -X POST https://api.digitalocean.com/v2/droplets \
+      -H 'Content-Type: application/json' \
+      -H "Authorization: Bearer $DO_TOKEN" \
+      -d '
+  {
+      "name":"master.domain.com",
+      "region":"sgp1",
+      "size":"512mb",
+      "image":"coreos-stable",
+      "ssh_keys":['$SSH_KEY_ID'],
+      "backups":false,
+      "private_networking":true,
+      "user_data": "'"$(cat cloud-init-node.yaml | sed 's/<master-private-ip>/$MASTER_PRIVATE_ IP/g sed 's/"/\\"/g')"'"
+  }
+  ```
+
+### List all Droplets (API)
+
+curl -X GET "https://api.digitalocean.com/v2/droplets" \
+  -H "Authorization: Bearer $DO_TOKEN" | jq .
+
+
+### Create Master Droplet (Web interface)
 
 Create a new droplet via DO interface, as follows:
   1. Droplet Hostname: `master.domain.com`
@@ -33,7 +133,7 @@ Create a new droplet via DO interface, as follows:
 
 For Demo: Create DNS record pointing `master.domain.com` to public IP of droplet
 
-### Create Node Instance
+### Create Node Droplet (Web interface)
 
 Create a new droplet via DO interface, as follows (replace %i% by running number):
   1. Droplet Hostname: `node%i%.domain.com`
