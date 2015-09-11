@@ -28,8 +28,8 @@ Get Id of SSH Keys added to your account using [jq](https://stedolan.github.io/j
 
 ```console
 $ curl -X GET "https://api.digitalocean.com/v2/account/keys" /
-> -H 'Content-Type: application/json' /
-> -H "Authorization: Bearer $DO_TOKEN"  -s | jq .
+ -H 'Content-Type: application/json' 
+ -H "Authorization: Bearer $DO_TOKEN"  -s | jq .
 {
   "ssh_keys": [
     {
