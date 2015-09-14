@@ -10,9 +10,9 @@ This demo script is a fork of [Kelsey Hightower demonstration at yapc-asia](http
 
 Demo confirmed working with k8s v1.0.4
 
-The slides for this talk are hosted [online](https://goo.gl/lqmklR)
+The slides for this talk are available on [slides.google.com](https://goo.gl/lqmklR)
 
 ## Notes
 
 1. `cloud-init-master.yaml` was changed to include `--service-node-port-range` flag
-1. If you get "SEGV" errors for `journalctl -f kube-<service>`, test if binary was curled successfully, curl again manually to fix
+1. If you get "SEGV" errors in the logs (`journalctl -f kube-<service>`), test if binary was curled successfully, curl again manually to fix (took me too long to figure this out)

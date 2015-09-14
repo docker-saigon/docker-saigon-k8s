@@ -293,7 +293,27 @@ kubectl get pods --watch-only
 
 #### Terminal 3
 
-```bash
+Start the upgrade process from version 1.0.0 to version 2.0.0:
+
+```
+kubectl rolling-update inspector --update-period=3s --image=b.gcr.io/kuar/inspector:2.0.0
+```
+
+Interrupt the upgrade process with ctrl-c:
+
+```
+ctrl-c
+```
+
+Rollback to version 1.0.0:
+
+```
+kubectl rolling-update inspector --rollback=true --update-period="2s" --image=b.gcr.io/kuar/inspector:1.0.0
+```
+
+Start the upgrade process again and let it complete:
+
+```
 kubectl rolling-update inspector --update-period=3s --image=b.gcr.io/kuar/inspector:2.0.0
 ```
 
