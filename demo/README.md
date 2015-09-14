@@ -51,10 +51,6 @@
 1. Ensure working directory has demo config files:
 
    ```bash
-   ssh core@master.domain.com
-   ```
-
-   ```bash
    git clone https://github.com/so0k/yapc-asia-2015.git
    ```
 

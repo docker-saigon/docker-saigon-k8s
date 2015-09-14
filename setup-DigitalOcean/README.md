@@ -11,10 +11,7 @@ k8s_latest=`curl https://storage.googleapis.com/kubernetes-release/release/stabl
 http://storage.googleapis.com/kubernetes-release/release/$k8s_latest/bin/linux/amd64/<binary_name>
 ```
 
-Revise the yaml files to ensure `kubernetes-release` is as expected (this repo version = 1.0.4).
-
-### Installation
-Quick start to set up Kubernetes on CoreOS/flannel at DigitalOcean.
+Revise the yaml files to ensure `kubernetes-release` is as expected (this repo version uses 1.0.4).
 
 ### Digital Ocean API Key
 
@@ -199,22 +196,9 @@ $ export SSH_KEY_ID=721599
   Get master private IP
 
   ```console
-  $ curl -X GET "https://api.digitalocean.com/v2/droplets/<master_id>"   -H "Authorization: Bearer $DO_TOKEN" -s | jq '.droplet.networks.v4'
-  [
-    {
-      "ip_address": "10.130.47.24",
-      "netmask": "255.255.0.0",
-      "gateway": "10.130.1.1",
-      "type": "private"
-    },
-    {
-      "ip_address": "188.166.250.205",
-      "netmask": "255.255.240.0",
-      "gateway": "188.166.240.1",
-      "type": "public"
-    }
-  ]
-  $ export MASTER_PRIVATE_IP=10.130.47.24
+  $ curl -X GET "https://api.digitalocean.com/v2/droplets/<master_id>"   -H "Authorization: Bearer $DO_TOKEN" -s | jq -r '.droplet.networks.v4[] | select(.type == "private") |  .ip_address'
+  10.44.48.24
+  $ export MASTER_PRIVATE_IP=10.44.48.24
   ```
 
 #### Create Node Droplets - untested
@@ -232,7 +216,7 @@ $ export SSH_KEY_ID=721599
       "ssh_keys":['$SSH_KEY_ID'],
       "backups":false,
       "private_networking":true,
-      "user_data": "'"$(cat cloud-init-node.yaml | sed 's/<master-private-ip>/$MASTER_PRIVATE_IP/g' | sed 's/"/\\"/g')"'"
+      "user_data": "'"$(cat cloud-init-node.yaml | sed "s/<master-private-ip>/${MASTER_PRIVATE_IP}/g" | sed 's/"/\\"/g')"'"
   }
   ```
 
