@@ -103,6 +103,62 @@ kubectl create -f yapc-asia-2015/demo/svc/kube-ui-svc.yaml --namespace=kube-syst
 
 Once UI pods have started, UI will be available here: http://master.domain.com:8080/ui/
 
+### Digital Ocean caveats:
+
+Notice that the default interface `eth0` receives 2 IP addresses:
+
+```console
+$ ip -4 addr show
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    inet 169.254.171.147/16 brd 169.254.255.255 scope link eth0
+       valid_lft forever preferred_lft forever
+    inet 188.166.243.236/20 brd 188.166.255.255 scope global eth0
+       valid_lft forever preferred_lft forever
+3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    inet 10.130.50.203/16 brd 10.130.255.255 scope global eth1
+       valid_lft forever preferred_lft forever
+4: flannel.1@NONE: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UNKNOWN group default
+    inet 10.244.40.0/16 scope global flannel.1
+       valid_lft forever preferred_lft forever
+5: docker0@NONE: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UP group default
+    inet 10.244.40.1/24 scope global docker0
+       valid_lft forever preferred_lft forever
+```
+
+This trips up `kelseyhightower\network-environment-setup` which picks up the first ip address (internal) for ${DEFAULT_IPV4} as the Host Name reported by the kubelet, causing several issues with the k8s cluster.
+
+[From DO CoreOS troubleshooting guide](https://www.digitalocean.com/community/tutorials/how-to-troubleshoot-common-issues-with-your-coreos-servers#checking-for-access-to-the-metadata-service): The actual cloud-config file that is given when the CoreOS server is created with DigitalOcean is stored using a metadata service. The Meta Data service lives in CIDR `196.254.0.0/16` which is routed through `eth0`.
+
+From within your host machine, type:
+
+```console
+$ curl -L 169.254.169.254/metadata/v1
+id
+hostname
+user-data
+vendor-data
+public-keys
+region
+interfaces/
+dns/
+
+$ curl -L 169.254.169.254/metadata/v1/user-data
+#cloud-config
+users:
+...
+```
+
+We can fix in 3 ways:
+
+1. Use the [`cgeoffroy/setup-network-environment`](https://github.com/cgeoffroy/setup-network-environment/commit/b09605e88c9bcc6d10bc442f6dd829ae317d488a) fork which comes with a `-f option to filter CIDR` use this option to filter out `196.254.0.0/16`
+1. Use $public_ipv4 variable which is made available to the cloud-config
+1. Use $private_ipv4 variable which is made avaialble to the cloud-config
+
+I chose option 1 to keep functionality the same as in original yaml files but make them work on Digital Ocean, this should be the same as `$public_ipv4` - which exposes cAdvisor statistics to the public internet. I believe using `$private_ipv4` is a better option.
+
 ### Create cluster using Digital Ocean web Interface
 
 Booo!
