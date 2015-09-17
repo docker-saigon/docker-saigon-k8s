@@ -1,26 +1,30 @@
-#/bin/bash
+#!/bin/bash
 
+#list your keys first and update the contents of $KEYS
 #doctl -k $DO_TOKEN keys
 KEYS="digitalocean02"
 IMAGE="coreos-alpha"
+MASTER_SIZE="512mb"
+NODE_SIZE="512mb"
 
 if ! [ -x "$(command -v doctl)" ]; then
-  echo "doctl missing, press ENTER To download or CTRL+C to cancel"
+  echo "doctl missing, press ENTER To download or CTRL+C to cancel script"
   read
 
-  #get doctl for:
+  #doctl releases:
   #   darwin-amd64-doctl.tar.bz2  
   #   linux-amd64-doctl.tar.bz2
-  #curl -sL https://github.com/digitalocean/doctl/releases/download/0.0.16/linux-amd64-doctl.tar.bz2 | tar xj -C /usr/bin/ 
-  
-  #get doctl for:
   #   windows-amd-64-doctl.zip
-  echo "Downloading doctl for Windows... "
-  curl -sL -o doctl.zip https://github.com/digitalocean/doctl/releases/download/0.0.16/windows-amd-64-doctl.zip
+
+  #echo "Downloading doctl for linux"
+  curl -sL https://github.com/digitalocean/doctl/releases/download/0.0.16/linux-amd64-doctl.tar.bz2 | tar xj -C /usr/bin/ 
+
+  #echo "Downloading doctl for Windows... "
+  #curl -sL -o doctl.zip https://github.com/digitalocean/doctl/releases/download/0.0.16/windows-amd-64-doctl.zip
   #ensure 7z is on bash path…
   # ln -s "/C/Program Files/7-Zip/7z.exe" /usr/bin/7z
   #extract to bin folder & remove archive
-  7z x doctl.zip -y -o"/usr/bin/" && rm doctl.zip
+  #7z x doctl.zip -y -o"/usr/bin/" && rm doctl.zip
 fi
 
 if [[ -z "$DO_TOKEN" ]] ; then
@@ -31,7 +35,7 @@ fi
 if [[ $# -lt 3 ]]; then 
   echo "Provision a Kubernetes cluster on Digital Ocean"
   echo ""
-  echo "  This script will provision 1 kubernetes master and <node_count> nodes running $IMAGE with flannel"
+  echo "  This script will provision 1 kubernetes master ($MASTER_SIZE) and <node_count> nodes running $IMAGE ($NODE_SIZE) with flannel"
   echo ""
 	echo "  create.sh <domain> <region> <node_count>"
 	exit 64
@@ -56,13 +60,13 @@ read
 #create master node
 #call doctl to create droplet, and wait for action to complete
 echo "Creating Kubernetes Master Droplet... (this could take a while)"
-MASTER_DROPLET_JSON=`doctl -f 'json' -k $DO_TOKEN d c -d $DOMAIN -i "$IMAGE" -s "512mb" -r "$REGION" -p -k $KEYS -uf configs/cloud-init-master.yaml --wait-for-active master`
+MASTER_DROPLET_JSON=`doctl -f 'json' -k $DO_TOKEN d c -d $DOMAIN -i "$IMAGE" -s $MASTER_SIZE -r "$REGION" -p -k $KEYS -uf configs/cloud-init-master.yaml --wait-for-active master`
 echo "Droplet Created."
 
 #get droplet name
 MASTER_DROPLET_NAME=`echo $MASTER_DROPLET_JSON | jq -r .name`
 
-#debugging strings:
+#debugging...
 #echo $MASTER_DROPLET_JSON | jq .
 #echo "press ENTER to continue or CTRL+C to cancel"
 #read
@@ -98,14 +102,15 @@ do
  	HOST="node${i}" 
  
  	echo "Creating ${HOST} Droplet..." 
- 	doctl -f 'json' -k $DO_TOKEN d c -d $DOMAIN -i "coreos-alpha" -s "512mb" -r "$REGION" -p -k $KEYS -u="${NODE_USERDATA}" $HOST | jq .
+  #using jq just to pretty print
+ 	doctl -f 'json' -k $DO_TOKEN d c -d $DOMAIN -i $IMAGE -s $NODE_SIZE -r "$REGION" -p -k $KEYS -u="${NODE_USERDATA}" $HOST | jq .
   echo "Request sent." 
 done
 
 echo "Script finished, k8s node Droplets may take a while to come online... - be patient -"
 echo "Connect to k8s master:"
-echo "         ssh -i ~/.ssh/id_digitalocean core@$MASTER_PUBLIC_IP"
-echo "k8s ui:"
+echo "         ssh core@$MASTER_PUBLIC_IP"
+echo "k8s ui (start manually first):"
 echo "         http://$MASTER_PUBLIC_IP:8080/ui/"
 
 #todo, generate .kubeconfig pointing to $MASTER_PUBLIC_IP

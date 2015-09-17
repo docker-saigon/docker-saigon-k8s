@@ -128,7 +128,7 @@ $ ip -4 addr show
        valid_lft forever preferred_lft forever
 ```
 
-This trips up `kelseyhightower\network-environment-setup` which picks up the first ip address (internal) for ${DEFAULT_IPV4} as the Host Name reported by the kubelet, causing several issues with the k8s cluster.
+This trips up `kelseyhightower\network-environment-setup` which picks up the first ip address (internal) for `${DEFAULT_IPV4}` as the Host Name reported by the kubelet, causing several issues with the k8s cluster.
 
 [From DO CoreOS troubleshooting guide](https://www.digitalocean.com/community/tutorials/how-to-troubleshoot-common-issues-with-your-coreos-servers#checking-for-access-to-the-metadata-service): The actual cloud-config file that is given when the CoreOS server is created with DigitalOcean is stored using a metadata service. The Meta Data service lives in CIDR `196.254.0.0/16` which is routed through `eth0`.
 
@@ -154,8 +154,8 @@ users:
 We can fix in 3 ways:
 
 1. Use the [`cgeoffroy/setup-network-environment`](https://github.com/cgeoffroy/setup-network-environment/commit/b09605e88c9bcc6d10bc442f6dd829ae317d488a) fork which comes with a `-f option to filter CIDR` use this option to filter out `196.254.0.0/16`
-1. Use $public_ipv4 variable which is made available to the cloud-config
-1. Use $private_ipv4 variable which is made avaialble to the cloud-config
+1. Use `$public_ipv4` variable which is made available to the cloud-config
+1. Use `$private_ipv4` variable which is made avaialble to the cloud-config
 
 I chose option 1 to keep functionality the same as in original yaml files but make them work on Digital Ocean, this should be the same as `$public_ipv4` - which exposes cAdvisor statistics to the public internet. I believe using `$private_ipv4` is a better option.
 

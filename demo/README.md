@@ -148,6 +148,11 @@ kubectl describe svc inspector
 
 http://node0.domain.com:31000
 
+Loop on service port to show the load balancing accross pods:
+```bash
+ while true; do curl -s http://<node ip>:31000/net |   grep -o -E '10\.[0-9]+\.[0-9]+\.[0-9]+'; sleep .5; done
+```
+
 ### Expose services with nginx
 
 ```bash

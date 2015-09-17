@@ -1,8 +1,9 @@
-#/bin/bash
+#!/bin/bash
 
 #doctl -k $DO_TOKEN keys
 KEYS="digitalocean02"
 IMAGE="coreos-alpha"
+NODE_SIZE="512mb"
 
 if [[ -z "$DO_TOKEN" ]] ; then
   echo "export DO_TOKEN first"
@@ -66,6 +67,6 @@ do
  	HOST="node${i}" 
  
  	echo "Creating ${HOST} Droplet..." 
- 	doctl -f 'json' -k $DO_TOKEN d c -d $DOMAIN -i "coreos-alpha" -s "512mb" -r "$REGION" -p -k $KEYS -u="${NODE_USERDATA}" $HOST | jq .
+ 	doctl -f 'json' -k $DO_TOKEN d c -d $DOMAIN -i $IMAGE -s "$NODE_SIZE" -r "$REGION" -p -k $KEYS -u="${NODE_USERDATA}" $HOST | jq .
   echo "Request sent." 
 done

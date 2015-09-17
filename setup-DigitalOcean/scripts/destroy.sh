@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 if [[ -z "$DO_TOKEN" ]] ; then
 	echo "export DO_TOKEN first"
@@ -31,7 +31,7 @@ echo ""
 echo "press ENTER to continue or CTRL+C to cancel"
 read
 
-echo "destroying nodes.."
+echo "Destroying nodes.."
 for i in `seq 0 ${MAX_ID}`; 
 do 
  	HOST="node${i}" 
