@@ -23,13 +23,13 @@ $ export DO_TOKEN=<token_from_website>
 
 ### Using doctl
 
-[`doctl`](https://github.com/digitalocean/doctl/) is a tool written in Go to simplify Digital Ocean control from the command line. Below are a few scripts using doctl to set up & tear down a Kubernetes cluster on Digital Ocean.
+[`doctl`](https://github.com/digitalocean/doctl/) is a tool written in Go to simplify Digital Ocean control from the command line. Below are a few scripts using `doctl` to set up & tear down a Kubernetes cluster on Digital Ocean.
 
-The Start script will detect if doctl is available and download doctl 0.0.16 if not found.
+The Start script will detect if `doctl` is available and download `doctl` `0.0.16` if not found.
 
-All scripts also depend on [jq](https://stedolan.github.io/jq/) but do not detect if it is missing.
+All scripts also depend on [`jq`](https://stedolan.github.io/jq/) but do not detect if it is missing.
 
-`jq` comes pre-installed on CoreOS, if you need to pull v1.5 to your local machine (assuming linux x86_64):
+`jq` comes pre-installed on CoreOS, if you need to pull `v1.5` to your local machine (assuming linux x86_64):
 
 ```console
 $ sudo curl -sLo /usr/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
@@ -62,7 +62,7 @@ $ ./scripts/create.sh domain.com sgp1 2
 $ ./scripts/addnodes.sh <domain> <region> <existing_count> <nodes_to_add>
 ```
 
-for example, the following command will add 2 nodes (node3 & node4) for domain.com in Singapore regaion
+for example, the following command will add 2 nodes (node3 & node4) for domain.com in Singapore region
 
 ```console
 $ ./scripts/addnodes.sh domain.com sgp1 3 2
@@ -72,7 +72,7 @@ $ ./scripts/addnodes.sh domain.com sgp1 3 2
 
 ##### Usage:
 
-*Danger*
+**Danger**
 
 ```console
 $ ./scripts/destroy.sh <domain> <region> <nodes>
@@ -86,7 +86,7 @@ $ ./scripts/destroy.sh domain.com sgp1 2
 
 ### Test Cluster
 
-Once the kubernetes cluster has been created, you can test the cluster with following commands
+Once the kubernetes cluster has been created, you can test the cluster on your master node with following commands:
 
 * `fleetctl list-machines` 
 * `kubectl get cs`
@@ -102,7 +102,7 @@ kubectl create -f yapc-asia-2015/demo/svc/kube-ui-svc.yaml --namespace=kube-syst
 
 Once UI pods have started, UI will be available here: http://master.domain.com:8080/ui/
 
-### Digital Ocean caveats:
+### Digital Ocean Caveats:
 
 Notice that the default interface `eth0` receives 2 IP addresses:
 
@@ -131,7 +131,7 @@ This trips up `kelseyhightower\network-environment-setup` which picks up the fir
 
 [From DO CoreOS troubleshooting guide](https://www.digitalocean.com/community/tutorials/how-to-troubleshoot-common-issues-with-your-coreos-servers#checking-for-access-to-the-metadata-service): The actual cloud-config file that is given when the CoreOS server is created with DigitalOcean is stored using a metadata service. The Meta Data service lives in CIDR `196.254.0.0/16` which is routed through `eth0`.
 
-From within your host machine, type:
+From within your host machine play with the metadata service by typing:
 
 ```console
 $ curl -L 169.254.169.254/metadata/v1
@@ -150,13 +150,13 @@ users:
 ...
 ```
 
-We can fix in 3 ways:
+We could fix k8s cluster in 3 ways:
 
 1. Use the [`cgeoffroy/setup-network-environment`](https://github.com/cgeoffroy/setup-network-environment/commit/b09605e88c9bcc6d10bc442f6dd829ae317d488a) fork which comes with a `-f option to filter CIDR` use this option to filter out `196.254.0.0/16`
 1. Use `$public_ipv4` variable which is made available to the cloud-config
 1. Use `$private_ipv4` variable which is made avaialble to the cloud-config
 
-I chose option 1 to keep functionality the same as in original yaml files but make them work on Digital Ocean, this should be the same as `$public_ipv4` - which exposes cAdvisor statistics to the public internet. I believe using `$private_ipv4` is a better option.
+I have chosen option 1 to keep functionality the same as in original yaml files but make cluster work on Digital Ocean, this should be the same as chosing option 2 (`$public_ipv4`) - which exposes cAdvisor statistics to the public internet. I believe using `$private_ipv4` is a better option to keep the stats private.
 
 ### Create cluster using Digital Ocean web Interface
 
@@ -199,30 +199,15 @@ Hardcore?
 
 Get Id of SSH Keys added to your account using [jq](https://stedolan.github.io/jq/)
 
-```
-curl -X GET "https://api.digitalocean.com/v2/account/keys" /
- -H 'Content-Type: application/json' 
- -H "Authorization: Bearer $DO_TOKEN"  -s | jq .
-{
-  "ssh_keys": [
-    {
-      "id": 418602,
-      "fingerprint": "...",
-      "public_key": "ssh-rsa ...",
-      "name": ".."
-    },
-    {
-      "id": 721599,
-      "fingerprint": "...",
-      "public_key": "...",
-      "name": "..."
-    }
-  ],
-  "links": {},
-  "meta": {
-    "total": 2
-  }
-}
+```console
+$ curl -X GET "https://api.digitalocean.com/v2/account/keys" \
+ -H 'Content-Type: application/json' \
+ -H "Authorization: Bearer $DO_TOKEN"  -s | jq .ssh_keys[] | jq '.id,.name'
+
+418602
+"key1_name"
+721599
+"key2_name"
 ```
 
 ```console
