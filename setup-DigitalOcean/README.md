@@ -36,9 +36,9 @@ $ sudo curl -sLo /usr/bin/jq https://github.com/stedolan/jq/releases/download/jq
 $ sudo chmod +x /usr/bin/jq
 ```
 
-The Scripts do not store any configuration of the cluster created and are pretty dumb, would like to move to terraform in future.
+The Scripts do not store any configuration of the cluster created and are pretty dumb, would like to move to terraform :heart: in future.
 
-**NOTE**: Be very careful with the script to destroy droplets, do not run unless you understand how it works!
+**NOTE :exclamation:**: Be very careful with the script to destroy droplets, do not run unless you understand how it works!
 
 #### Script: start.sh
 
@@ -72,7 +72,7 @@ $ ./scripts/addnodes.sh domain.com sgp1 3 2
 
 ##### Usage:
 
-**Danger**
+:bomb: **Danger** :bomb:
 
 ```console
 $ ./scripts/destroy.sh <domain> <region> <nodes>
