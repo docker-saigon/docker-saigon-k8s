@@ -62,7 +62,7 @@ $ ./scripts/create.sh domain.com sgp1 2
 $ ./scripts/addnodes.sh <domain> <region> <existing_count> <nodes_to_add>
 ```
 
-for example, the following command will add 2 nodes (node3 & node4) for domain.com in Singapore region
+for example, the following command will add 2 nodes (node3 & node4) assuming 3 nodes exist (node0, node1 & node2) - making it a total of 5 nodes for domain.com in Singapore region
 
 ```console
 $ ./scripts/addnodes.sh domain.com sgp1 3 2
