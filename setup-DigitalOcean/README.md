@@ -2,12 +2,12 @@
 
 Simple bootstrap config for quick start
 
-get latest stable release version number:
+get latest stable kubernetes release version number:
 
 ```bash
-k8s_latest=`curl https://storage.googleapis.com/kubernetes-release/release/stable.txt -s`
+k8s_latest=`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`
 
-# all kubernetes binaries can be curled via:
+# all stable kubernetes binaries can then be curled via:
 http://storage.googleapis.com/kubernetes-release/release/$k8s_latest/bin/linux/amd64/<binary_name>
 ```
 
@@ -29,9 +29,16 @@ The Start script will detect if doctl is available and download doctl 0.0.16 if 
 
 All scripts also depend on [jq](https://stedolan.github.io/jq/) but do not detect if it is missing.
 
-The Scripts do not store any configuration of the cluster created and are pretty dumb.
+`jq` comes pre-installed on CoreOS, if you need to pull v1.5 to your local machine (assuming linux x86_64):
 
-Be very careful with the script to destroy droplets, do not run unless you understand how it works!
+```console
+$ sudo curl -sLo /usr/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
+$ sudo chmod +x /usr/bin/jq
+```
+
+The Scripts do not store any configuration of the cluster created and are pretty dumb, would like to move to terraform in future.
+
+**NOTE**: Be very careful with the script to destroy droplets, do not run unless you understand how it works!
 
 #### Script: start.sh
 
@@ -41,7 +48,7 @@ Be very careful with the script to destroy droplets, do not run unless you under
 $ ./scripts/create.sh <domain> <region> <nodes>
 ```
 
-for example, the following command will create *3 nodes* (1 master + 2 workers) for domain.com in Singapore region
+for example, the following command will create **3 nodes** (1 master + 2 workers) for domain.com in Singapore region
 
 ```console
 $ ./scripts/create.sh domain.com sgp1 2
@@ -80,14 +87,6 @@ $ ./scripts/destroy.sh domain.com sgp1 2
 ### Test Cluster
 
 Once the kubernetes cluster has been created, you can test the cluster with following commands
-
-* Connect to master, download kubectl
-
-  ```
-  curl -sLo kubectl http://storage.googleapis.com/kubernetes-release/release/v1.0.4/bin/linux/amd64/kubectl
-  chmod +x kubectl
-  sudo mv kubectl /opt/bin/kubectl
-  ```
 
 * `fleetctl list-machines` 
 * `kubectl get cs`
