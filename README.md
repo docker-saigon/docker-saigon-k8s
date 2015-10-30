@@ -10,7 +10,7 @@ This demo script is a fork of [Kelsey Hightower demonstration at yapc-asia](http
 
 Demo confirmed working with k8s v1.0.4
 
-The slides for this talk are available on [slides.google.com](https://goo.gl/lqmklR)
+The slides for this talk are available on [slides.google.com](https://goo.gl/E4QRQu)
 
 ## Notes
 
